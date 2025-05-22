@@ -7,6 +7,8 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import QTimer
 
 # === CONFIGURATION ===
+# Get the directory where the script is located
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 WG_INTERFACES = ["Sys76Laptop_Ads", "Sys76Laptop"]  # Update with your interfaces
 ICON_ON = "🟢"
 ICON_OFF = "🔴"
@@ -58,11 +60,11 @@ def get_overall_icon(interface_states):
     # Pick the first active interface
     for iface, status in interface_states.items():
         if status == "ON":
-            icon_path = f"icon_{iface}.png"
+            icon_path = os.path.join(SCRIPT_DIR, f"icon_{iface}.png")
             if os.path.exists(icon_path):
                 return QIcon(icon_path)
     # No active VPN
-    return QIcon("icon_off.png")
+    return QIcon(os.path.join(SCRIPT_DIR, "icon_off.png"))
 
 
 def update_menu(actions, tray):
@@ -92,7 +94,7 @@ def update_menu(actions, tray):
 def main():
     app = QApplication(sys.argv)
     tray = QSystemTrayIcon()
-    tray.setIcon(QIcon("icon_off.png"))
+    tray.setIcon(QIcon(os.path.join(SCRIPT_DIR, "icon_off.png")))
     tray.setToolTip("WireGuard Tray")
     tray.show()
 
