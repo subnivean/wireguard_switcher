@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import os
 import sys
 import subprocess
 from PyQt5.QtWidgets import QApplication, QSystemTrayIcon, QMenu, QAction
@@ -54,10 +55,14 @@ def toggle_vpn(interface, tray, actions):
 
 
 def get_overall_icon(interface_states):
-    if any(state == "ON" for state in interface_states.values()):
-        return QIcon.fromTheme("network-vpn")  # Or use a custom icon path
-    else:
-        return QIcon.fromTheme("network-offline")
+    # Pick the first active interface
+    for iface, status in interface_states.items():
+        if status == "ON":
+            icon_path = f"icon_{iface}.png"
+            if os.path.exists(icon_path):
+                return QIcon(icon_path)
+    # No active VPN
+    return QIcon("icon_off.png")
 
 
 def update_menu(actions, tray):
@@ -87,7 +92,7 @@ def update_menu(actions, tray):
 def main():
     app = QApplication(sys.argv)
     tray = QSystemTrayIcon()
-    tray.setIcon(QIcon.fromTheme("network-offline"))
+    tray.setIcon(QIcon("icon_off.png"))
     tray.setToolTip("WireGuard Tray")
     tray.show()
 
@@ -115,6 +120,7 @@ def main():
     timer.start(10000)
 
     update_menu(interface_actions, tray)
+
     sys.exit(app.exec_())
 
 
